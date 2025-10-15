@@ -1,0 +1,4 @@
+node_modules
+users-sequelize.sqlite3
+req.http
+package-lock.json
