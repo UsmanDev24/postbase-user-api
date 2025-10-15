@@ -1,0 +1,23 @@
+{
+  "name": "user-auth-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "user-server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "cross-env DEBUG=users:* PORT=5858 SEQUELIZE_CONNECT=sequelize-sqlite.yaml nodemon ./user-server.mjs",
+    "db" : "cross-env SEQUELIZE_CONNECT=sequelize-sqlite.yaml node ./user-sequelize.mjs"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cross-env": "^10.1.0",
+    "debug": "^4.4.3",
+    "express": "^5.1.0",
+    "fs-extra": "^11.3.2",
+    "js-yaml": "^4.1.0",
+    "nodemon": "^3.1.10",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
+  }
+}
