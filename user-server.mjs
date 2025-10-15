@@ -40,6 +40,10 @@ function check(req, res, next) {
 
 server.post('/create-user', async (req, res, next) => {
   await connectDB();
+  let isAlreadyUser = await findOneUser(req.body.username)
+  if (isAlreadyUser) {
+    res.status(500).send("Already a User has username: "+req.body.username)
+  }
   let result = await createUser(req);
   res.type = 'json';
   res.send(result);
@@ -87,8 +91,8 @@ server.post('/update-user/:username', async (req, res, next) => {
     res.status(404).send("No Such User: " + req.params.username)
     return
   }
-  const update = userParams(req)
-  await SQUser.update(update, { where: { username: req.body.username } })
+  let update  = req.body
+  await SQUser.update(update, { where: { username: req.params.username } })
   const updated = await findOneUser(req.params.username);
   res.type = 'json',
     res.send(updated);
