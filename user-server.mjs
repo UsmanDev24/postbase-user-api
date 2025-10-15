@@ -42,10 +42,10 @@ server.post('/create-user', async (req, res, next) => {
   await connectDB();
   let isAlreadyUser = await findOneUser(req.body.username)
   if (isAlreadyUser) {
-    res.status(500).send("Already a User has username: "+req.body.username)
+    res.status(500).send("Already a User has username: " + req.body.username)
   }
   let result = await createUser(req);
-  res.type = 'json';
+  res.contentType('json');
   res.send(result);
 });
 
@@ -57,7 +57,7 @@ server.post('/find-or-create', async (req, res, next) => {
     user = await createUser(req);
     if (!user) throw new Error('No user created');
   }
-  res.type = 'json';
+  res.contentType('json');
   res.send(user);
 
 });
@@ -68,7 +68,7 @@ server.get('/find/:username', async (req, res, next) => {
   log(req.params.username)
   let user = await findOneUser(req.params.username)
   if (user) {
-    res.type = 'json';
+    res.contentType('json');
     res.send(user)
   } else {
     res.status(404).send(new Error('Did not find: ' + req.params.username))
@@ -80,7 +80,7 @@ server.get('/list', async (req, res, next) => {
   await connectDB();
   let users = await SQUser.findAll()
   users.map(user => sanitizedUser(user))
-  res.type = 'json';
+  res.contentType('json');
   res.send(users);
 })
 
@@ -91,11 +91,11 @@ server.post('/update-user/:username', async (req, res, next) => {
     res.status(404).send("No Such User: " + req.params.username)
     return
   }
-  let update  = req.body
+  let update = req.body
   await SQUser.update(update, { where: { username: req.params.username } })
   const updated = await findOneUser(req.params.username);
-  res.type = 'json',
-    res.send(updated);
+  res.contentType('json');
+  res.send(updated);
 })
 
 server.delete("/destroy/:username", async (req, res, next) => {
@@ -106,38 +106,33 @@ server.delete("/destroy/:username", async (req, res, next) => {
     return
   }
   await user.destroy();
-  res.contentType = 'json';
+  res.contentType('json')
   res.send({})
 })
 
 server.post('/password-check', async (req, res, next) => {
-  try {
-    await connectDB();
-    const user = await SQUser.findOne({
-      where: { username: req.params.username }
-    });
-    let checked;
-    if (!user) {
-      checked = {
-        check: false, username: req.params.username,
-        message: "Could not find user"
-      };
-    } else if (user.username === req.params.username
-      && user.password === req.params.password) {
-      checked = { check: true, username: user.username };
-    } else {
-      checked = {
-        check: false, username: req.params.username,
-        message: "Incorrect password"
-      };
-    }
-    res.contentType = 'json';
-    res.send(checked);
-    next(false);
-  } catch (err) {
-    res.send(500, err);
-    next(false);
+
+  await connectDB();
+  const user = await SQUser.findOne({
+    where: { username: req.body.username }
+  });
+  let checked;
+  if (!user) {
+    checked = {
+      check: false, username: req.body.username,
+      message: "Could not find user"
+    };
+  } else if (user.username === req.body.username
+    && user.password === req.body.password) {
+    checked = { check: true, username: user.username };
+  } else {
+    checked = {
+      check: false, username: req.body.username,
+      message: "Incorrect password"
+    };
   }
+  res.contentType('json');
+  res.send(checked);
 });
 
 process.on('uncaughtException', function (err) {
