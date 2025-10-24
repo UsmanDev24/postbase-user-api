@@ -14,9 +14,7 @@ server.use(express.json())
 server.use(express.urlencoded())
 
 
-server.listen(process.env.PORT, "localhost", function () {
-  log(' listening at ' + process.env.PORT);
-});
+
 
 var apiKeys = [
   { user: 'them', key: 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF' }];
@@ -135,7 +133,11 @@ server.post('/password-check', async (req, res, next) => {
   res.contentType('json');
   res.send(checked);
 });
-
+server.listen(process.env.PORT, "localhost", function (err) {
+  if (err) console.log(err);
+  
+  log(' listening at ' + process.env.PORT);
+});
 process.on('uncaughtException', function (err) {
   console.error("UNCAUGHT EXCEPTION - " + (err.stack || err));
   process.exit(1);
