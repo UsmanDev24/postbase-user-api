@@ -5,7 +5,7 @@
   "main": "user-server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env DEBUG=users:* PORT=5858 SEQUELIZE_CONNECT=sequelize-sqlite.yaml nodemon ./user-server.mjs",
+    "start": "cross-env DEBUG=users:* PORT=5858 SEQUELIZE_CONNECT=sequelize-sqlite.yaml node ./user-server.mjs",
     "db" : "cross-env SEQUELIZE_CONNECT=sequelize-sqlite.yaml node ./user-sequelize.mjs"
   },
   "author": "",

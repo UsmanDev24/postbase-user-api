@@ -11,6 +11,7 @@ const server = express();
 server.use(authorizationParser)
 server.use(check)
 server.use(express.json())
+server.use(express.urlencoded())
 
 
 server.listen(process.env.PORT, "localhost", function () {
