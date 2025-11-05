@@ -1,5 +1,6 @@
 import express from "express";
 import { default as DBG } from "debug";
+import { default as bcrypt} from 'bcryptjs'
 import { SQUser, connectDB, findOneUser, createUser, sanitizedUser, userParams } from "./user-sequelize.mjs";
 import authorizationParser from "./middleware/authparser.mjs"
 
@@ -110,7 +111,7 @@ server.delete("/destroy/:username", async (req, res, next) => {
 })
 
 server.post('/password-check', async (req, res, next) => {
-
+  
   await connectDB();
   const user = await SQUser.findOne({
     where: { username: req.body.username }
@@ -122,7 +123,7 @@ server.post('/password-check', async (req, res, next) => {
       message: "Could not find user"
     };
   } else if (user.username === req.body.username
-    && user.password === req.body.password) {
+    && await bcrypt.compare(req.body.password, user.password)) {
     checked = { check: true, username: user.username };
   } else {
     checked = {
