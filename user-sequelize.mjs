@@ -72,7 +72,7 @@ export function userParams(req) {
     familyName: req.body.familyName,
     givenName: req.body.givenName,
     middleName: req.body.middleName,
-    emails: JSON.stringify(req.body.emails),
+    emails: req.body.emails,
     photos: JSON.stringify(req.body.photos)
   };
 }
@@ -86,8 +86,8 @@ export function sanitizedUser(user) {
     middleName: user.middleName
   };
   try {
-    ret.emails = JSON.parse(user.emails);
-  } catch (e) { ret.emails = []; }
+    ret.emails = user.emails;
+  } catch (e) { ret.emails = null; }
   try {
     ret.photos = JSON.parse(user.photos);
   } catch (e) { ret.photos = []; }

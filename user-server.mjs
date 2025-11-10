@@ -71,7 +71,7 @@ server.get('/find/:username', async (req, res, next) => {
     res.contentType('json');
     res.send(user)
   } else {
-    res.status(404).send(new Error('Did not find: ' + req.params.username))
+    res.status(404).send('Did not find: ' + req.params.username)
   }
 
 })
@@ -121,7 +121,12 @@ server.post('/password-check', async (req, res, next) => {
     checked = {
       check: false, username: req.body.username,
       message: "Could not find user"
-    };
+    }; 
+  } else if (user.provider != "local") {
+    checked = {
+      check: false, username: req.body.username,
+      message: "Could not find user"
+    }; 
   } else if (user.username === req.body.username
     && await bcrypt.compare(req.body.password, user.password)) {
     checked = { check: true, username: user.username };
