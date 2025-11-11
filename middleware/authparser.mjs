@@ -1,9 +1,10 @@
 
-import debug from "debug";
+import debug from "debug" ;
+import { default as jwt} from 'jsonwebtoken';
 
 const log = debug("users:authParser-log")
 
-export default function authorizationParser(req, res, next) {
+export default async function authorizationParser(req, res, next) {
   const header = req.headers.authorization;
 
   if (!header) {
@@ -29,8 +30,16 @@ export default function authorizationParser(req, res, next) {
     } catch {
       // Ignore invalid Base64 to maintain non-blocking behavior
     }
+  } else if (scheme.toLowerCase() === 'bearer') {
+    try {
+      const decoded = jwt.verify(credentials, process.env.BEARER_TOKEN_PRIVATEKEY)
+      const {username, password} = decoded
+      auth.bearer = {username: username, password, password}
+    } catch (error) {
+      
+    }
   }
-
+  console.log(auth)
   req.authorization = auth;
   return next();
 }

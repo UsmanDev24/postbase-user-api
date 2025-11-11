@@ -1,6 +1,7 @@
+import '@dotenvx/dotenvx/config.js';
 import express from "express";
 import { default as DBG } from "debug";
-import { default as bcrypt} from 'bcryptjs'
+import { default as bcrypt } from 'bcryptjs'
 import { SQUser, connectDB, findOneUser, createUser, sanitizedUser, userParams } from "./user-sequelize.mjs";
 import authorizationParser from "./middleware/authparser.mjs"
 
@@ -18,7 +19,7 @@ server.use(express.urlencoded())
 
 
 var apiKeys = [
-  { user: 'them', key: 'D4ED43C0-8BD6-4FE2-B358-7C0E230D11EF' }];
+  { user: process.env.APIKEY_USER, key: process.env.APIKEY_PASSWORD }];
 function check(req, res, next) {
   if (req.authorization && req.authorization.basic) {
     var found = false;
@@ -33,7 +34,22 @@ function check(req, res, next) {
     else {
       res.status(401).send("Not authenticated");
     }
-  } else {
+  } else if (req.authorization && req.authorization.bearer) {
+    var found = false;
+    for (let auth of apiKeys) {
+      if (auth.key === req.authorization.bearer.password
+        && auth.user === req.authorization.bearer.username) {
+        found = true;
+        break;
+      }
+    }
+    if (found) next();
+    else {
+      res.status(401).send("Not authenticated");
+    }
+
+  }
+  else {
     res.status(500).send('No Authorization Key');
   }
 }
@@ -111,7 +127,7 @@ server.delete("/destroy/:username", async (req, res, next) => {
 })
 
 server.post('/password-check', async (req, res, next) => {
-  
+
   await connectDB();
   const user = await SQUser.findOne({
     where: { username: req.body.username }
@@ -121,12 +137,12 @@ server.post('/password-check', async (req, res, next) => {
     checked = {
       check: false, username: req.body.username,
       message: "Could not find user"
-    }; 
+    };
   } else if (user.provider != "local") {
     checked = {
       check: false, username: req.body.username,
       message: "Could not find user"
-    }; 
+    };
   } else if (user.username === req.body.username
     && await bcrypt.compare(req.body.password, user.password)) {
     checked = { check: true, username: user.username };
@@ -141,7 +157,7 @@ server.post('/password-check', async (req, res, next) => {
 });
 server.listen(process.env.PORT, "localhost", function (err) {
   if (err) console.log(err);
-  
+
   log(' listening at ' + process.env.PORT);
 });
 process.on('uncaughtException', function (err) {

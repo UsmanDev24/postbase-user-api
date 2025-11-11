@@ -5,18 +5,20 @@
   "main": "user-server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env DEBUG=users:* PORT=5858 SEQUELIZE_CONNECT=sequelize-psql.yaml node ./user-server.mjs",
+    "start": "cross-env DEBUG=users:*   node ./user-server.mjs",
     "db": "cross-env SEQUELIZE_CONNECT=sequelize-sqlite.yaml node ./user-sequelize.mjs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.51.1",
     "bcryptjs": "^3.0.3",
     "cross-env": "^10.1.0",
     "debug": "^4.4.3",
     "express": "^5.1.0",
     "fs-extra": "^11.3.2",
     "js-yaml": "^4.1.0",
+    "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
     "pg": "^8.16.3",
     "sequelize": "^6.37.7",
