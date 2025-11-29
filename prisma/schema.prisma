@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Users {
+  id            String   @id @default(uuid()) @db.Uuid()
+  username      String   @unique @db.VarChar(255)
+  password_hash String   @db.VarChar(2040)
+  provider      String   @default("Local") @db.VarChar(255)
+  pid           String?  @unique
+  displayName   String?  @db.VarChar(255)
+  fullName      String   @db.VarChar(255)
+  firstName     String   @db.VarChar(255)
+  lastName      String?  @db.VarChar(255)
+  email         String   @unique @db.VarChar(255)
+  photoURL      String?  @db.VarChar(2024)
+  photo         Bytes?   @db.ByteA
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  updated_at    DateTime @updatedAt() @db.Timestamptz(6)
+}
+
+model SQNotes {
+  notekey   String   @id @db.VarChar(255)
+  title     String?  @db.VarChar(255)
+  body      String?
+  createdAt DateTime @db.Timestamptz(6)
+  updatedAt DateTime @db.Timestamptz(6)
+}
+
+model session {
+  sid    String   @id @db.VarChar
+  sess   Json     @db.Json
+  expire DateTime @db.Timestamp(6)
+
+  @@index([expire], map: "IDX_session_expire")
+}

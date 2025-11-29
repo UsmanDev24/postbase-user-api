@@ -2,7 +2,7 @@ import '@dotenvx/dotenvx/config.js';
 import express from "express";
 import { default as DBG } from "debug";
 import { default as bcrypt } from 'bcryptjs'
-import { SQUser, connectDB, findOneUser, createUser, sanitizedUser, userParams } from "./user-sequelize.mjs";
+import { DBUsers, connectDB, findOneUser, createUser, sanitizedUser, userParams } from "./users-prisma.mjs";
 import authorizationParser from "./middleware/authparser.mjs"
 
 const log = DBG('users:service');
@@ -94,7 +94,7 @@ server.get('/find/:username', async (req, res, next) => {
 
 server.get('/list', async (req, res, next) => {
   await connectDB();
-  let users = await SQUser.findAll()
+  let users = await DBUsers.findMany();
   users.map(user => sanitizedUser(user))
   res.contentType('json');
   res.send(users);
@@ -108,7 +108,11 @@ server.post('/update-user/:username', async (req, res, next) => {
     return
   }
   let update = req.body
-  await SQUser.update(update, { where: { username: req.params.username } })
+  await DBUsers.update({
+    data: update, where: {
+      username: req.params.username
+    }
+  })
   const updated = await findOneUser(req.params.username);
   res.contentType('json');
   res.send(updated);
@@ -116,12 +120,12 @@ server.post('/update-user/:username', async (req, res, next) => {
 
 server.delete("/destroy/:username", async (req, res, next) => {
   await connectDB()
-  let user = await SQUser.findOne({ where: { username: req.params.username } })
+  let user = await DBUsers.findUnique({ where: { username: req.params.username } })
   if (!user) {
     res.status(404).send("No Such User: " + req.params.username)
     return
   }
-  await user.destroy();
+  await DBUsers.delete({where: {id: user.id}});
   res.contentType('json')
   res.send({})
 })
@@ -129,7 +133,7 @@ server.delete("/destroy/:username", async (req, res, next) => {
 server.post('/password-check', async (req, res, next) => {
 
   await connectDB();
-  const user = await SQUser.findOne({
+  const user = await DBUsers.findUnique({
     where: { username: req.body.username }
   });
   let checked;
@@ -138,13 +142,13 @@ server.post('/password-check', async (req, res, next) => {
       check: false, username: req.body.username,
       message: "Could not find user"
     };
-  } else if (user.provider != "local") {
+  } else if (user.provider != "Local") {
     checked = {
       check: false, username: req.body.username,
       message: "Could not find user"
     };
   } else if (user.username === req.body.username
-    && await bcrypt.compare(req.body.password, user.password)) {
+    && await bcrypt.compare(req.body.password, user.password_hash)) {
     checked = { check: true, username: user.username };
   } else {
     checked = {

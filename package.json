@@ -1,27 +1,34 @@
 {
   "name": "user-auth-service",
   "version": "1.0.0",
+  "type": "module",
   "description": "",
   "main": "user-server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env DEBUG=users:*   node ./user-server.mjs",
+    "start": "dotenvx run -- cross-env DEBUG=users:*   npx tsx ./user-server.mjs",
     "db": "cross-env SEQUELIZE_CONNECT=sequelize-sqlite.yaml node ./user-sequelize.mjs"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.51.1",
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^7.0.1",
     "bcryptjs": "^3.0.3",
     "cross-env": "^10.1.0",
     "debug": "^4.4.3",
     "express": "^5.1.0",
-    "fs-extra": "^11.3.2",
-    "js-yaml": "^4.1.0",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
     "pg": "^8.16.3",
-    "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
+    "prisma": "^7.0.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
   }
 }

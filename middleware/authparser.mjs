@@ -39,7 +39,7 @@ export default async function authorizationParser(req, res, next) {
       
     }
   }
-  console.log(auth)
+  
   req.authorization = auth;
   return next();
 }
