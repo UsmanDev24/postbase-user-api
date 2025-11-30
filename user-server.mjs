@@ -68,7 +68,9 @@ server.post('/create-user', async (req, res, next) => {
 server.post('/find-or-create', async (req, res, next) => {
 
   await connectDB();
-  let user = await findOneUser(req.body.username);
+  let user = await DBUsers.findUnique({
+    where: { email: req.body.email}
+  });
   if (!user) {
     user = await createUser(req);
     if (!user) throw new Error('No user created');

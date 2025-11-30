@@ -1,8 +1,9 @@
+import { use } from 'react';
 import { prisma } from './lib/prisma';
-import { default as DBG} from 'debug'
+import { default as DBG } from 'debug'
 const log = DBG('users:prisma')
 const logErr = DBG('users:prisma_Error')
-export async function connectDB( ) {
+export async function connectDB() {
   try {
     await prisma.$connect()
   } catch (error) {
@@ -17,11 +18,12 @@ export async function disconnetDB() {
   }
 }
 export function userParams(req) {
-  const params  = {
+  const params = {
     username: req.body.username,
     password_hash: req.body.password_hash,
     provider: req.body.provider,
     pid: req.body.pid,
+    displayName: req.body.displayName,
     fullName: req.body.fullName,
     firstName: req.body.firstName,
     lastName: req.body.lastName,
@@ -52,11 +54,17 @@ export const DBUsers = prisma.users;
 
 export async function findOneUser(username) {
   try {
-    const user = await DBUsers.findUnique({where: {
-      username
-    }});
-    const sanitized = sanitizedUser(user);
-    return sanitized;
+    const user = await DBUsers.findUnique({
+      where: {
+        username
+      }
+    });
+    if (user) {
+      const sanitized = sanitizedUser(user);
+      return sanitized;
+    }
+    return user;
+
   } catch (error) {
     console.error(error)
   }
