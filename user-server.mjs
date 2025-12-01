@@ -97,7 +97,7 @@ server.get('/find/:username', async (req, res, next) => {
 server.get('/list', async (req, res, next) => {
   await connectDB();
   let users = await DBUsers.findMany();
-  users.map(user => sanitizedUser(user))
+  users = users.map(user => sanitizedUser(user))
   res.contentType('json');
   res.send(users);
 })
