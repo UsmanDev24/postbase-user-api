@@ -23,19 +23,3 @@ model Users {
   created_at    DateTime @default(now()) @db.Timestamptz(6)
   updated_at    DateTime @updatedAt() @db.Timestamptz(6)
 }
-
-model SQNotes {
-  notekey   String   @id @db.VarChar(255)
-  title     String?  @db.VarChar(255)
-  body      String?
-  createdAt DateTime @db.Timestamptz(6)
-  updatedAt DateTime @db.Timestamptz(6)
-}
-
-model session {
-  sid    String   @id @db.VarChar
-  sess   Json     @db.Json
-  expire DateTime @db.Timestamp(6)
-
-  @@index([expire], map: "IDX_session_expire")
-}
