@@ -69,14 +69,36 @@ server.post('/find-or-create', async (req, res, next) => {
 
   await connectDB();
   let user = await DBUsers.findUnique({
-    where: { email: req.body.email}
+    where: { email: req.body.email }
   });
   if (!user) {
     user = await createUser(req);
     if (!user) throw new Error('No user created');
+    res.contentType('json');
+    res.send(user);
+  } else if (user) {
+    let update = req.body;
+    const updatedUser = await DBUsers.update({
+      where: {
+        email: update.email,
+      },
+      data: {
+        password_hash: update.password_hash,
+        provider: update.provider,
+        fullName: update.fullName,
+        firstName: update.firstName,
+        lastName: update.lastName,
+        displayName: update.displayName,
+        pid: update.pid,
+        photoURL: update.photoURL,
+        photo: update.photo,
+      }
+
+    })
+    res.contentType('json');
+    res.send(updatedUser);
   }
-  res.contentType('json');
-  res.send(user);
+
 
 });
 
@@ -92,6 +114,21 @@ server.get('/find/:username', async (req, res, next) => {
     res.status(404).send('Did not find: ' + req.params.username)
   }
 
+})
+server.get('/find/email/:email', async (req, res, next) => {
+  await connectDB();
+  log(req.params.email)
+  let user = await DBUsers.findUnique({
+    where: {
+      email: req.params.email
+    }
+  })
+  if (user) {
+    res.contentType('json');
+    res.send(user)
+  } else {
+    res.status(404).send('Did not find: ' + req.params.email)
+  }
 })
 
 server.get('/list', async (req, res, next) => {
@@ -127,7 +164,7 @@ server.delete("/destroy/:username", async (req, res, next) => {
     res.status(404).send("No Such User: " + req.params.username)
     return
   }
-  await DBUsers.delete({where: {id: user.id}});
+  await DBUsers.delete({ where: { id: user.id } });
   res.contentType('json')
   res.send({})
 })
