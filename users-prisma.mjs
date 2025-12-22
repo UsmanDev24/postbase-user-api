@@ -29,7 +29,8 @@ export function userParams(req) {
     lastName: req.body.lastName,
     email: req.body.email,
     photoURL: req.body.photoURL,
-    photo: req.body.photo
+    photo: req.body.photo,
+    photoType: req.body.photoType
   }
   return params;
 }
@@ -46,7 +47,8 @@ export function sanitizedUser(user) {
     lastName: user.lastName,
     email: user.email,
     photoURL: user.photoURL,
-    photo: user.photo
+    photo: user.photo,
+    photoType: user.photoType
   }
   return sanitized;
 }
