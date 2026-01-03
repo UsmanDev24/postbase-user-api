@@ -78,6 +78,7 @@ server.post('/find-or-create', async (req, res, next) => {
     res.send(user);
   } else if (user) {
     let update = req.body;
+    const photo = Buffer.from(update.photo, "base64");
     const updatedUser = await DBUsers.update({
       where: {
         email: update.email,
@@ -91,7 +92,7 @@ server.post('/find-or-create', async (req, res, next) => {
         displayName: update.displayName,
         pid: update.pid,
         photoURL: update.photoURL,
-        photo: update.photo,
+        photo: photo,
         photoType: update.photoType
       }
 

@@ -18,6 +18,7 @@ export async function disconnetDB() {
   }
 }
 export function userParams(req) {
+  const photo = Buffer.from(req.body.photo, "base64")
   const params = {
     username: req.body.username,
     password_hash: req.body.password_hash,
@@ -29,7 +30,7 @@ export function userParams(req) {
     lastName: req.body.lastName,
     email: req.body.email,
     photoURL: req.body.photoURL,
-    photo: req.body.photo,
+    photo: photo,
     photoType: req.body.photoType
   }
   return params;
