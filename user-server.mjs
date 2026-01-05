@@ -53,7 +53,10 @@ function check(req, res, next) {
 
 server.post('/create-user', async (req, res, next) => {
   await connectDB();
-  let isAlreadyUser = await findOneUser(req.body.username)
+  let isAlreadyUser = await DBUsers.findUnique({
+    where: { username: req.body.username},
+    omit: {photo: true}
+  })
   if (isAlreadyUser) {
     res.status(500).send("Already a User has username: " + req.body.username)
   }
