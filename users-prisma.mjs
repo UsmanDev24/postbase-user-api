@@ -55,11 +55,11 @@ export function sanitizedUser(user) {
 }
 export const DBUsers = prisma.users;
 
-export async function findOneUser(username) {
+export async function findOneUser(userId) {
   try {
     const user = await DBUsers.findUnique({
       where: {
-        username
+        id: userId
       }
     });
     if (user) {

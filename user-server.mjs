@@ -12,11 +12,8 @@ const server = express();
 
 server.use(authorizationParser)
 server.use(check)
-server.use(express.json())
-server.use(express.urlencoded())
-
-
-
+server.use(express.json({limit: "3000kb"}))
+server.use(express.urlencoded({ limit: "3000kb"}))
 
 var apiKeys = [
   { user: process.env.APIKEY_USER, key: process.env.APIKEY_PASSWORD }];
@@ -65,6 +62,20 @@ server.post('/create-user', async (req, res, next) => {
   res.send(result);
 });
 
+server.post('/update-user/photo/:id', async (req, res, next) => {
+  await connectDB();
+  const user = await DBUsers.findUnique({ where: { id: req.params.id }, omit: { photo: true } })
+  if (user) {
+    const newUser = await DBUsers.update({
+      where: { id: user.id },
+      data: { photo: Buffer.from(req.body.photo, "base64"), photoType: req.body.photoType },
+    })
+    res.status(200)
+    res.contentType('json');
+    res.send(newUser)
+  }
+  res.status(404).end()
+})
 server.post('/find-or-create', async (req, res, next) => {
 
   await connectDB();
@@ -104,16 +115,16 @@ server.post('/find-or-create', async (req, res, next) => {
 
 });
 
-server.get('/find/:username', async (req, res, next) => {
+server.get('/find/:userId', async (req, res, next) => {
 
   await connectDB()
-  log(req.params.username)
-  let user = await findOneUser(req.params.username)
+  log(req.params.userId)
+  let user = await findOneUser(req.params.userId)
   if (user) {
     res.contentType('json');
     res.send(user)
   } else {
-    res.status(404).send('Did not find: ' + req.params.username)
+    res.status(404).send('Did not find: ' + req.params.userId)
   }
 
 })
@@ -123,16 +134,30 @@ server.get('/find/email/:email', async (req, res, next) => {
   let user = await DBUsers.findUnique({
     where: {
       email: req.params.email
-    }
+    },
+    omit: {photo: true, password_hash: true}
   })
+  res.contentType('json')
   if (user) {
-    res.contentType('json');
     res.send(user)
   } else {
-    res.status(404).send('Did not find: ' + req.params.email)
+    res.send({email: false})
   }
 })
-
+server.get('/find/username/:username', async (req, res, next) => {
+  await connectDB()
+  log(req.params.username)
+  const user = await DBUsers.findUnique({
+    where: {username: req.params.username},
+    omit: {photo: true, password_hash: true}
+  })
+  res.contentType('json');
+  if (user) {
+    res.send(user)
+  } else {
+    res.send({username: false})
+  }
+})
 server.get('/list', async (req, res, next) => {
   await connectDB();
   let users = await DBUsers.findMany();
@@ -190,7 +215,7 @@ server.post('/password-check', async (req, res, next) => {
     };
   } else if (user.username === req.body.username
     && await bcrypt.compare(req.body.password, user.password_hash)) {
-    checked = { check: true, username: user.username };
+    checked = { check: true, username: user.username, id: user.id };
   } else {
     checked = {
       check: false, username: req.body.username,
