@@ -106,7 +106,6 @@ server.post('/find-or-create', async (req, res, next) => {
         displayName: update.displayName,
         pid: update.pid,
         photoURL: update.photoURL,
-        photo: photo,
         photoType: update.photoType
       }
 
