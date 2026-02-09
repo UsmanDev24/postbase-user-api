@@ -1,7 +1,5 @@
 node_modules
-users-sequelize.sqlite3
-req.http
 package-lock.json
 .env.keys
-
 /generated/prisma
+pnpm-lock.yaml

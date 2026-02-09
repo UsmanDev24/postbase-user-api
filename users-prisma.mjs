@@ -1,4 +1,3 @@
-import { use } from 'react';
 import { prisma } from './lib/prisma';
 import { default as DBG } from 'debug'
 const log = DBG('users:prisma')

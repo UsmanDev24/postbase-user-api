@@ -1,16 +1,16 @@
 {
-  "name": "user-auth-service",
+  "name": "postbase-users-api",
   "version": "1.0.0",
+  "private" : true,
   "type": "module",
   "description": "",
   "main": "user-server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env DEBUG=users:*   npx tsx ./user-server.mjs",
-    "db": "cross-env SEQUELIZE_CONNECT=sequelize-sqlite.yaml node ./user-sequelize.mjs"
+    "start": "cross-env DEBUG=users:*   npx tsx ./user-server.mjs"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Usman Ghani",
+  "license": "",
   "dependencies": {
     "@dotenvx/dotenvx": "^1.51.4",
     "@prisma/adapter-pg": "^7.2.0",
