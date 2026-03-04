@@ -1,5 +1,4 @@
 node_modules
 package-lock.json
 .env.keys
-/generated/prisma
-pnpm-lock.yaml
+/src/generated/prisma

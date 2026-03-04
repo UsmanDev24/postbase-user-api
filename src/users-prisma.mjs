@@ -1,4 +1,4 @@
-import { prisma } from './lib/prisma';
+import { prisma } from './lib/prisma.js';
 import { default as DBG } from 'debug'
 const log = DBG('users:prisma')
 const logErr = DBG('users:prisma_Error')

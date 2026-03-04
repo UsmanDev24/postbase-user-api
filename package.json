@@ -1,31 +1,33 @@
 {
   "name": "postbase-users-api",
   "version": "1.0.0",
-  "private" : true,
+  "private": true,
   "type": "module",
   "description": "",
   "main": "user-server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "cross-env DEBUG=users:* tsx ./user-server.mjs"
+    "start": "cross-env DEBUG=users:* node  ./dist/user-server.mjs",
+    "dev": "cross-env DEBUG=users:* tsx  ./src/user-server.mjs",
+    "postinstall": "prisma db push --config=./src/prisma.config.ts ; prisma generate --config=./src/prisma.config.ts ; tsc"
   },
   "author": "Usman Ghani",
   "license": "",
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.51.4",
-    "@prisma/adapter-pg": "^7.2.0",
-    "@prisma/client": "^7.2.0",
+    "@dotenvx/dotenvx": "^1.52.0",
+    "@prisma/adapter-pg": "^7.4.2",
+    "@prisma/client": "^7.4.2",
     "bcryptjs": "^3.0.3",
     "cross-env": "^10.1.0",
     "debug": "^4.4.3",
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
-    "nodemon": "^3.1.11"
+    "nodemon": "^3.1.14"
   },
   "devDependencies": {
-    "@types/node": "^24.10.4",
-    "@types/pg": "^8.16.0",
-    "prisma": "^7.2.0",
+    "@types/node": "^24.11.0",
+    "@types/pg": "^8.18.0",
+    "prisma": "^7.4.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
