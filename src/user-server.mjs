@@ -227,7 +227,7 @@ server.post('/password-check', async (req, res, next) => {
   res.contentType('json');
   res.send(checked);
 });
-server.listen(process.env.PORT, "localhost", function (err) {
+server.listen(process.env.PORT || 8080, "localhost", function (err) {
   if (err) console.log(err);
 
   log(' listening at ' + process.env.PORT);
