@@ -52,7 +52,7 @@ function check(req, res, next) {
 }
 
 server.post('/create-user', async (req, res, next) => {
-  await connectDB();
+  
   let isAlreadyUser = await DBUsers.findUnique({
     where: { username: req.body.username},
     omit: {photo: true}
@@ -66,7 +66,7 @@ server.post('/create-user', async (req, res, next) => {
 });
 
 server.post('/update-user/photo/:id', async (req, res, next) => {
-  await connectDB();
+  
   const user = await DBUsers.findUnique({ where: { id: req.params.id }, omit: { photo: true } })
   if (user) {
     const newUser = await DBUsers.update({
@@ -81,7 +81,7 @@ server.post('/update-user/photo/:id', async (req, res, next) => {
 })
 server.post('/find-or-create', async (req, res, next) => {
 
-  await connectDB();
+  
   let user = await DBUsers.findUnique({
     where: { email: req.body.email }
   });
@@ -119,7 +119,7 @@ server.post('/find-or-create', async (req, res, next) => {
 
 server.get('/find/:userId', async (req, res, next) => {
 
-  await connectDB()
+
   log(req.params.userId)
   let user = await findOneUser(req.params.userId)
   if (user) {
@@ -131,7 +131,7 @@ server.get('/find/:userId', async (req, res, next) => {
 
 })
 server.get('/find/email/:email', async (req, res, next) => {
-  await connectDB();
+  
   log(req.params.email)
   let user = await DBUsers.findUnique({
     where: {
@@ -147,7 +147,7 @@ server.get('/find/email/:email', async (req, res, next) => {
   }
 })
 server.get('/find/username/:username', async (req, res, next) => {
-  await connectDB()
+
   log(req.params.username)
   const user = await DBUsers.findUnique({
     where: {username: req.params.username},
@@ -161,7 +161,7 @@ server.get('/find/username/:username', async (req, res, next) => {
   }
 })
 server.get('/list', async (req, res, next) => {
-  await connectDB();
+  
   let users = await DBUsers.findMany();
   users = users.map(user => sanitizedUser(user))
   res.contentType('json');
@@ -169,7 +169,7 @@ server.get('/list', async (req, res, next) => {
 })
 
 server.post('/update-user/:username', async (req, res, next) => {
-  await connectDB();
+  
   let isUser = await findOneUser(req.params.username)
   if (!isUser) {
     res.status(404).send("No Such User: " + req.params.username)
@@ -187,7 +187,7 @@ server.post('/update-user/:username', async (req, res, next) => {
 })
 
 server.delete("/destroy/:username", async (req, res, next) => {
-  await connectDB()
+
   let user = await DBUsers.findUnique({ where: { username: req.params.username } })
   if (!user) {
     res.status(404).send("No Such User: " + req.params.username)
@@ -200,7 +200,7 @@ server.delete("/destroy/:username", async (req, res, next) => {
 
 server.post('/password-check', async (req, res, next) => {
 
-  await connectDB();
+  
   const user = await DBUsers.findUnique({
     where: { username: req.body.username }
   });
