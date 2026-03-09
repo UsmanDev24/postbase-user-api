@@ -12,8 +12,8 @@ const server = express();
 
 server.use(authorizationParser)
 server.use(check)
-server.use(express.json({limit: "3000kb"}))
-server.use(express.urlencoded({ limit: "3000kb"}))
+server.use(express.json({ limit: "3000kb" }))
+server.use(express.urlencoded({ limit: "3000kb" }))
 
 var apiKeys = [
   { user: process.env.APIKEY_USER, key: process.env.APIKEY_PASSWORD }];
@@ -52,10 +52,9 @@ function check(req, res, next) {
 }
 
 server.post('/create-user', async (req, res, next) => {
-  
+
   let isAlreadyUser = await DBUsers.findUnique({
-    where: { username: req.body.username},
-    omit: {photo: true}
+    where: { username: req.body.username },
   })
   if (isAlreadyUser) {
     res.status(500).send("Already a User has username: " + req.body.username)
@@ -67,11 +66,11 @@ server.post('/create-user', async (req, res, next) => {
 
 server.post('/update-user/photo/:id', async (req, res, next) => {
   
-  const user = await DBUsers.findUnique({ where: { id: req.params.id }, omit: { photo: true } })
+  const user = await DBUsers.findUnique({ where: { id: req.params.id }})
   if (user) {
     const newUser = await DBUsers.update({
       where: { id: user.id },
-      data: { photo: Buffer.from(req.body.photo, "base64"), photoType: req.body.photoType },
+      data: { photoURL: req.body.photoURL, photoType: req.body.photoType },
     })
     res.status(200)
     res.contentType('json');
@@ -79,9 +78,8 @@ server.post('/update-user/photo/:id', async (req, res, next) => {
   }
   res.status(404).end()
 })
-server.post('/find-or-create', async (req, res, next) => {
 
-  
+server.post('/find-or-create', async (req, res, next) => {
   let user = await DBUsers.findUnique({
     where: { email: req.body.email }
   });
@@ -90,35 +88,13 @@ server.post('/find-or-create', async (req, res, next) => {
     if (!user) throw new Error('No user created');
     res.contentType('json');
     res.send(user);
-  } else if (user) {
-    let update = req.body;
-    const photo = Buffer.from(update.photo, "base64");
-    const updatedUser = await DBUsers.update({
-      where: {
-        email: update.email,
-      },
-      data: {
-        password_hash: update.password_hash,
-        provider: update.provider,
-        fullName: update.fullName,
-        firstName: update.firstName,
-        lastName: update.lastName,
-        displayName: update.displayName,
-        pid: update.pid,
-        photoURL: update.photoURL,
-        photoType: update.photoType
-      }
-
-    })
-    res.contentType('json');
-    res.send(updatedUser);
+    return
   }
-
-
+  res.contentType('json');
+  res.send(user);
 });
 
 server.get('/find/:userId', async (req, res, next) => {
-
 
   log(req.params.userId)
   let user = await findOneUser(req.params.userId)
@@ -131,37 +107,37 @@ server.get('/find/:userId', async (req, res, next) => {
 
 })
 server.get('/find/email/:email', async (req, res, next) => {
-  
+
   log(req.params.email)
   let user = await DBUsers.findUnique({
     where: {
       email: req.params.email
     },
-    omit: {photo: true, password_hash: true}
+    omit: { password_hash: true }
   })
   res.contentType('json')
   if (user) {
     res.send(user)
   } else {
-    res.send({email: false})
+    res.send({ email: false })
   }
 })
 server.get('/find/username/:username', async (req, res, next) => {
 
   log(req.params.username)
   const user = await DBUsers.findUnique({
-    where: {username: req.params.username},
-    omit: {photo: true, password_hash: true}
+    where: { username: req.params.username },
+    omit: { password_hash: true }
   })
   res.contentType('json');
   if (user) {
     res.send(user)
   } else {
-    res.send({username: false})
+    res.send({ username: false })
   }
 })
 server.get('/list', async (req, res, next) => {
-  
+
   let users = await DBUsers.findMany();
   users = users.map(user => sanitizedUser(user))
   res.contentType('json');
@@ -169,7 +145,7 @@ server.get('/list', async (req, res, next) => {
 })
 
 server.post('/update-user/:username', async (req, res, next) => {
-  
+
   let isUser = await findOneUser(req.params.username)
   if (!isUser) {
     res.status(404).send("No Such User: " + req.params.username)
@@ -200,7 +176,7 @@ server.delete("/destroy/:username", async (req, res, next) => {
 
 server.post('/password-check', async (req, res, next) => {
 
-  
+
   const user = await DBUsers.findUnique({
     where: { username: req.body.username }
   });
@@ -227,7 +203,7 @@ server.post('/password-check', async (req, res, next) => {
   res.contentType('json');
   res.send(checked);
 });
-server.listen(process.env.PORT, "0.0.0.0" ,function (err) {
+server.listen(process.env.PORT, "0.0.0.0", function (err) {
   if (err) console.log(err);
 
   log(' listening at ' + process.env.PORT);
