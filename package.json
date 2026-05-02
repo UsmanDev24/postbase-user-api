@@ -7,9 +7,10 @@
   "main": "user-server.mjs",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": " bun  ./dist/user-server.mjs",
-    "dev": "cross-env DEBUG=users:* bun  ./src/user-server.mjs",
-    "prisma": "dotenvx run -- prisma --config=./src/prisma.config.ts",
+    "start": "dotenvx run -f .env.production --  bun  ./dist/user-server.mjs",
+    "dev": "dotenvx run -f .env.development -- cross-env DEBUG=users:* bun  ./src/user-server.mjs",
+    "prisma": "dotenvx run -f .env.production -- prisma --config=./src/prisma.config.ts",
+    "prisma-dev": "dotenvx run -f .env.development -- prisma --config=./src/prisma.config.ts",
     "build": "prisma db push --config=./src/prisma.config.ts ; prisma generate --config=./src/prisma.config.ts ; tsc"
   },
   "author": "Usman Ghani",
